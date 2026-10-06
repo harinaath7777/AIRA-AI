@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AIRA AI — AI Research Assistant</title>
+  <meta name="description" content="AIRA AI — An intelligent research assistant that searches the web, retrieves relevant passages, and delivers extractive summaries from real sources." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="icon" type="image/jpeg" href="/static/aira_icon.jpg" />
+</head>
+<body>
+
+<!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+<aside class="sidebar" id="sidebar">
+
+  <div class="sidebar-top">
+    <div class="brand">
+      <img src="/static/aira_icon.jpg" class="brand-icon" alt="AIRA AI" />
+      <div class="brand-text">
+        <span class="brand-name">AIRA <span class="brand-ai">AI</span></span>
+      </div>
+    </div>
+    <button class="collapse-btn" id="sidebarToggle" aria-label="Toggle sidebar">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+    </button>
+  </div>
+
+  <button class="new-research-btn" onclick="showPage('home')">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    <span>New Research</span>
+  </button>
+
+  <nav class="sidebar-nav">
+    <button class="nav-item active" id="navHome" onclick="showPage('home')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      <span>Home</span>
+    </button>
+    <button class="nav-item" id="navHistory" onclick="showPage('history')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+      <span>History</span>
+    </button>
+    <button class="nav-item" id="navSaved" onclick="showPage('saved')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
+      </svg>
+      <span>Saved</span>
+    </button>
+    <button class="nav-item" id="navCompare" onclick="showPage('compare')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="20" x2="18" y2="10"/>
+        <line x1="12" y1="20" x2="12" y2="4"/>
+        <line x1="6" y1="20" x2="6" y2="14"/>
+      </svg>
+      <span>Compare</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-recents" id="sidebarRecents">
+    <div class="recents-label">Recents</div>
+    <div id="sidebarHistoryList"><div class="recents-empty">No research yet</div></div>
+  </div>
+
+  <!-- Theme Switcher -->
+  <div class="sidebar-theme">
+    <div class="theme-switcher" id="themeSwitcher">
+      <button class="theme-btn active" data-theme="dark" onclick="setTheme('dark')" title="Dark Theme">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <span>Dark</span>
+      </button>
+      <button class="theme-btn" data-theme="light" onclick="setTheme('light')" title="Light Theme">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+        </svg>
+        <span>Light</span>
+      </button>
+      <button class="theme-btn" data-theme="oled" onclick="setTheme('oled')" title="OLED Pure Black">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/>
+        </svg>
+        <span>OLED</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- User / Logout -->
+  <div class="sidebar-user">
+    <div class="sidebar-user-info">
+      <div class="user-avatar">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <span class="user-name" id="sidebarUser">User</span>
+    </div>
+    <button class="logout-btn" onclick="logout()" title="Sign out">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+    </button>
+  </div>
+
+</aside>
+
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<main class="main" id="main">
+
+  <!-- ── HOME ── -->
+  <div class="page active" id="pageHome">
+    <div class="home-wrap">
+      <div class="home-center">
+
+        <div class="home-logo">
+          <img src="/static/aira_icon.jpg" class="home-logo-icon" alt="AIRA AI" />
+        </div>
+
+        <h1 class="home-title">What do you want to research?</h1>
+        <p class="home-sub">AIRA AI searches the web, reads sources, and gives you the answers.</p>
+
+        <div class="search-wrap" id="searchWrap">
+          <div class="search-field" id="searchField">
+            <textarea
+              id="searchInput"
+              class="search-ta"
+              placeholder="Ask anything…"
+              rows="1"
+              aria-label="Research query"
+            ></textarea>
+            <button class="mic-btn" id="searchMicBtn" onclick="toggleVoiceInput('searchInput', 'searchMicBtn')" title="Dictate search query (Speech-to-Text)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z"/>
+                <path d="M19 10v2a7 7 0 01-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="22"/>
+              </svg>
+            </button>
+            <button class="send-btn" id="searchBtn" onclick="startResearch()" aria-label="Search">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="search-footer">
+            <div class="mode-tabs">
+              <button class="mode-tab" id="modeQuick" onclick="setMode('quick')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                Quick
+              </button>
+              <button class="mode-tab active" id="modeNormal" onclick="setMode('normal')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                Normal
+              </button>
+              <button class="mode-tab" id="modeDeep" onclick="setMode('deep')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                Deep
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="suggestions">
+          <button class="suggestion-pill" onclick="setQuery(this.textContent.trim())">What causes urban heat islands?</button>
+          <button class="suggestion-pill" onclick="setQuery(this.textContent.trim())">Latest advances in fusion energy</button>
+          <button class="suggestion-pill" onclick="setQuery(this.textContent.trim())">How does CRISPR gene editing work?</button>
+          <button class="suggestion-pill" onclick="setQuery(this.textContent.trim())">Future of quantum computing</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── LOADING ── -->
+  <div class="page" id="pageLoading">
+    <div class="loading-wrap">
+      <div class="loading-top">
+        <div class="aira-orb">
+          <div class="orb-ring"></div>
+          <img src="/static/aira_icon.jpg" class="orb-icon" alt="AIRA" />
+        </div>
+        <div>
+          <div class="loading-label">AIRA is researching</div>
+          <div class="loading-q" id="loadingQuery"></div>
+        </div>
+      </div>
+      <div class="stages-list" id="progressStages"></div>
+    </div>
+  </div>
+
+  <!-- ── RESULT ── -->
+  <div class="page" id="pageResult">
+    <div class="result-wrap">
+
+      <!-- Top bar -->
+      <div class="result-topbar">
+        <button class="topbar-back" onclick="showPage('home')" aria-label="New search">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="19" y1="12" x2="5" y2="12"/>
+            <polyline points="12 19 5 12 12 5"/>
+          </svg>
+          New research
+        </button>
+        <div class="topbar-actions">
+          <button class="tb-btn" id="saveBtn" onclick="saveCurrentResearch()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
+            </svg>
+            Save
+          </button>
+          <button class="tb-btn" onclick="exportMarkdown()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            .md
+          </button>
+          <button class="tb-btn" onclick="exportPDF()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- Question heading -->
+      <h1 class="result-q" id="resultQuery"></h1>
+      <div class="result-chips" id="resultMeta"></div>
+
+      <!-- Divider -->
+      <div class="divider"></div>
+
+      <!-- Answer -->
+      <div class="answer-block">
+        <div class="block-label">
+          <div class="label-dot teal"></div>
+          Answer
+        </div>
+        <div class="answer-text" id="resultSummary"></div>
+        <div class="answer-credit">Extractive summary · generated from retrieved sources by AIRA AI</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Sources -->
+      <div class="sources-block">
+        <div class="block-label">
+          <div class="label-dot blue"></div>
+          Sources
+        </div>
+        <div class="sources-row" id="resultSources"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Passages -->
+      <div class="passages-block">
+        <div class="block-label">
+          <div class="label-dot purple"></div>
+          Relevant Passages
+        </div>
+        <div id="resultPassages"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Follow-up -->
+      <div class="followup-block">
+        <div class="block-label">
+          <div class="label-dot orange"></div>
+          Follow-up
+        </div>
+        <div id="followupThread"></div>
+        <div class="fu-input-wrap">
+          <img src="/static/aira_icon.jpg" class="fu-avatar" alt="AIRA" />
+          <div class="fu-field" id="fuField">
+            <textarea id="followupInput" class="fu-ta" placeholder="Ask a follow-up question…" rows="1"></textarea>
+            <button class="fu-mic" id="fuMicBtn" onclick="toggleVoiceInput('followupInput', 'fuMicBtn')" title="Dictate follow-up (Speech-to-Text)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z"/>
+                <path d="M19 10v2a7 7 0 01-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="22"/>
+              </svg>
+            </button>
+            <button class="fu-send" id="followupBtn" onclick="askFollowup()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── HISTORY ── -->
+  <div class="page" id="pageHistory">
+    <div class="list-wrap">
+      <div class="list-header history-header-row">
+        <div>
+          <h1 class="list-title">History</h1>
+          <p class="list-sub">Your previous research sessions</p>
+        </div>
+        <button class="export-zip-btn" id="exportZipBtn" onclick="exportHistoryZip()" title="Download entire research history as a structured ZIP archive">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Export All (ZIP)</span>
+        </button>
+      </div>
+      <div id="historyList" class="card-list"></div>
+    </div>
+  </div>
+
+  <!-- ── SAVED ── -->
+  <div class="page" id="pageSaved">
+    <div class="list-wrap">
+      <div class="list-header">
+        <h1 class="list-title">Saved</h1>
+        <p class="list-sub">Research you've bookmarked</p>
+      </div>
+      <div id="savedList" class="card-list"></div>
+    </div>
+  </div>
+
+  <!-- ── COMPARE ── -->
+  <div class="page" id="pageCompare">
+    <div class="list-wrap">
+      <div class="list-header">
+        <h1 class="list-title">Compare Topics</h1>
+        <p class="list-sub">Research two subjects side by side</p>
+      </div>
+
+      <div class="cmp-inputs">
+        <div class="cmp-col">
+          <label class="cmp-label">Topic A</label>
+          <input id="compareA" class="cmp-input" type="text" placeholder="e.g. Electric Vehicles" />
+        </div>
+        <div class="cmp-vs">VS</div>
+        <div class="cmp-col">
+          <label class="cmp-label">Topic B</label>
+          <input id="compareB" class="cmp-input" type="text" placeholder="e.g. Petrol Vehicles" />
+        </div>
+      </div>
+
+      <div class="cmp-modes">
+        <button class="mode-tab" onclick="setCompareMode('quick', this)">Quick</button>
+        <button class="mode-tab active" onclick="setCompareMode('normal', this)">Normal</button>
+        <button class="mode-tab" onclick="setCompareMode('deep', this)">Deep</button>
+      </div>
+
+      <button class="primary-action" id="cmpBtn" onclick="startCompare()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+        Compare
+      </button>
+
+      <div id="compareProgress" style="display:none" class="cmp-progress"></div>
+      <div id="compareResult"></div>
+    </div>
+  </div>
+
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AIRA AI — Sign In</title>
+  <meta name="description" content="Sign in to AIRA AI Research Assistant" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <link rel="icon" type="image/jpeg" href="/static/aira_icon.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0e1117;
+      --surface:  #161b27;
+      --surface2: #1c2235;
+      --border:   rgba(255,255,255,0.08);
+      --border-hi:rgba(255,255,255,0.16);
+      --text:     #e2e8f0;
+      --text-2:   #94a3b8;
+      --text-3:   #4a5568;
+      --teal:     #2dd4bf;
+      --teal-dim: rgba(45,212,191,0.12);
+      --teal-glow:rgba(45,212,191,0.22);
+      --blue:     #60a5fa;
+      --red:      #f87171;
+      --green:    #4ade80;
+      --r:        12px;
+      --ease:     cubic-bezier(.4,0,.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px;-webkit-font-smoothing:antialiased}
+    body{
+      font-family:'Inter',system-ui,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 0%, rgba(45,212,191,.09) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 80% 80%, rgba(96,165,250,.05) 0%, transparent 60%),
+        #0e1117;
+    }
+    a{color:var(--teal);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .auth-card {
+      width:100%;max-width:420px;
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:40px 36px 36px;
+      box-shadow:0 24px 80px rgba(0,0,0,.4);
+    }
+
+    /* Brand */
+    .brand {
+      display:flex;align-items:center;gap:12px;
+      margin-bottom:32px;
+    }
+    .brand-icon {
+      width:44px;height:44px;border-radius:12px;
+      object-fit:cover;
+      box-shadow:0 0 0 1.5px rgba(45,212,191,.4),0 4px 20px rgba(45,212,191,.15);
+    }
+    .brand-name {
+      font-size:1.25rem;font-weight:700;letter-spacing:-.02em;
+    }
+    .brand-ai {
+      background:linear-gradient(135deg,var(--teal),var(--blue));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+
+    /* Tabs */
+    .tab-row {
+      display:flex;gap:0;
+      background:var(--surface2);
+      border-radius:10px;padding:4px;
+      margin-bottom:28px;
+    }
+    .tab-btn {
+      flex:1;padding:9px;border-radius:7px;
+      font-size:.85rem;font-weight:600;
+      color:var(--text-2);
+      border:none;background:none;cursor:pointer;
+      transition:all 180ms var(--ease);
+    }
+    .tab-btn.active {
+      background:var(--surface);
+      color:var(--text);
+      box-shadow:0 1px 4px rgba(0,0,0,.3);
+    }
+
+    /* Forms */
+    .form-panel{display:none}
+    .form-panel.active{display:block}
+
+    .form-group{margin-bottom:18px}
+    label {
+      display:block;font-size:.77rem;font-weight:600;
+      color:var(--text-2);margin-bottom:7px;letter-spacing:.01em;
+    }
+    input {
+      width:100%;background:var(--surface2);
+      border:1px solid var(--border);
+      border-radius:var(--r);
+      padding:11px 14px;
+      font-size:.95rem;color:var(--text);
+      font-family:inherit;outline:none;
+      transition:border-color 180ms var(--ease),box-shadow 180ms var(--ease);
+    }
+    input:focus {
+      border-color:rgba(45,212,191,.5);
+      box-shadow:0 0 0 3px rgba(45,212,191,.1);
+    }
+    input::placeholder{color:var(--text-3)}
+
+    .submit-btn {
+      width:100%;padding:12px;border-radius:var(--r);
+      background:var(--teal);color:#0a0f1a;
+      font-size:.95rem;font-weight:700;
+      border:none;cursor:pointer;font-family:inherit;
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      transition:background 180ms var(--ease),transform 180ms,box-shadow 180ms;
+      margin-top:8px;
+    }
+    .submit-btn:hover {
+      background:#5eead4;
+      transform:translateY(-1px);
+      box-shadow:0 4px 20px var(--teal-glow);
+    }
+    .submit-btn:active{transform:translateY(0)}
+    .submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+
+    .spinner {
+      width:16px;height:16px;
+      border:2px solid rgba(10,15,26,.3);
+      border-top-color:#0a0f1a;
+      border-radius:50%;
+      animation:spin .6s linear infinite;
+      display:none;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Alert */
+    .alert {
+      padding:11px 14px;border-radius:10px;
+      font-size:.84rem;margin-bottom:18px;
+      display:none;
+    }
+    .alert.error  {background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:var(--red)}
+    .alert.success{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:var(--green)}
+    .alert.show{display:block}
+
+    /* Divider */
+    .divider {
+      display:flex;align-items:center;gap:12px;
+      margin:20px 0;color:var(--text-3);font-size:.76rem;
+    }
+    .divider::before,.divider::after{
+      content:'';flex:1;height:1px;background:var(--border);
+    }
+
+    .footer-link {
+      text-align:center;margin-top:20px;
+      font-size:.82rem;color:var(--text-2);
+    }
+
+    /* Password strength */
+    .pw-strength {
+      height:3px;border-radius:3px;margin-top:8px;
+      background:var(--surface2);overflow:hidden;
+    }
+    .pw-bar {
+      height:100%;border-radius:3px;width:0;
+      transition:width .3s,background .3s;
+    }
+    .pw-hint{font-size:.72rem;color:var(--text-3);margin-top:5px}
+
+    /* Floating particles */
+    .particles {
+      position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;
+    }
+    .particle {
+      position:absolute;border-radius:50%;
+      background:rgba(45,212,191,.15);
+      animation:float linear infinite;
+    }
+    @keyframes float{
+      0%{transform:translateY(100vh) scale(0);opacity:0}
+      10%{opacity:1}
+      90%{opacity:.3}
+      100%{transform:translateY(-20px) scale(1);opacity:0}
+    }
+    .auth-card{position:relative;z-index:1}
+  </style>
+</head>
+<body>
+
+<!-- Ambient particles -->
+<div class="particles" id="particles"></div>
+
+<div class="auth-card" id="authCard">
+
+  <!-- Brand -->
+  <div class="brand">
+    <img src="/static/aira_icon.jpg" class="brand-icon" alt="AIRA AI" />
+    <span class="brand-name">AIRA <span class="brand-ai">AI</span></span>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-row">
+    <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
+    <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">Create Account</button>
+  </div>
+
+  <!-- Alert -->
+  <div class="alert" id="alertBox"></div>
+
+  <!-- ── LOGIN FORM ── -->
+  <div class="form-panel active" id="panelLogin">
+    <form onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label for="loginUsername">Username or Email</label>
+        <input id="loginUsername" type="text" placeholder="Enter username or email"
+               autocomplete="username" required />
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password" placeholder="Enter password"
+               autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="submit-btn" id="loginBtn">
+        <span id="loginBtnText">Sign In</span>
+        <div class="spinner" id="loginSpinner"></div>
+      </button>
+    </form>
+    <div class="footer-link">
+      Don't have an account?
+      <a href="#" onclick="switchTab('register'); return false">Create one</a>
+    </div>
+  </div>
+
+  <!-- ── REGISTER FORM ── -->
+  <div class="form-panel" id="panelRegister">
+    <form onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label for="regUsername">Username</label>
+        <input id="regUsername" type="text" placeholder="Choose a username"
+               autocomplete="username" required minlength="3" />
+      </div>
+      <div class="form-group">
+        <label for="regEmail">Email</label>
+        <input id="regEmail" type="email" placeholder="you@example.com"
+               autocomplete="email" required />
+      </div>
+      <div class="form-group">
+        <label for="regPassword">Password</label>
+        <input id="regPassword" type="password" placeholder="At least 8 characters"
+               autocomplete="new-password" required minlength="8"
+               oninput="checkStrength(this.value)" />
+        <div class="pw-strength"><div class="pw-bar" id="pwBar"></div></div>
+        <div class="pw-hint" id="pwHint">Use 8+ characters with letters and numbers</div>
+      </div>
+      <button type="submit" class="submit-btn" id="regBtn">
+        <span id="regBtnText">Create Account</span>
+        <div class="spinner" id="regSpinner"></div>
+      </button>
+    </form>
+    <div class="footer-link">
+      Already have an account?
+      <a href="#" onclick="switchTab('login'); return false">Sign in</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+  // Particles ───────────────────────────────────────────────
+  (function() {
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 12; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 6 + 3;
+      p.style.cssText = `
+        width:${size}px;height:${size}px;
+        left:${Math.random()*100}%;
+        animation-duration:${Math.random()*15+10}s;
+        animation-delay:${Math.random()*10}s;
+        opacity:${Math.random()*.5+.1};
+      `;
+      container.appendChild(p);
+    }
+  })();
+
+  // ── Tab switch ──────────────────────────────────────────────
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+    document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+    hideAlert();
+  }
+
+  // ── Alert ───────────────────────────────────────────────────
+  function showAlert(msg, type) {
+    const el = document.getElementById('alertBox');
+    el.textContent = msg;
+    el.className = `alert ${type} show`;
+  }
+  function hideAlert() {
+    document.getElementById('alertBox').className = 'alert';
+  }
+
+  // ── Password strength ───────────────────────────────────────
+  function checkStrength(pw) {
+    const bar  = document.getElementById('pwBar');
+    const hint = document.getElementById('pwHint');
+    let score = 0;
+    if (pw.length >= 8)  score++;
+    if (pw.length >= 12) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    const labels = ['', 'Weak', 'Fair', 'Good', 'Strong', 'Excellent'];
+    const colors = ['', '#f87171', '#fb923c', '#fbbf24', '#4ade80', '#2dd4bf'];
+    bar.style.width = `${score * 20}%`;
+    bar.style.background = colors[score] || '#4a5568';
+    hint.textContent = score > 0 ? labels[score] : 'Use 8+ characters with letters and numbers';
+  }
+
+  // ── Login ───────────────────────────────────────────────────
+  async function handleLogin(e) {
+    e.preventDefault();
+    hideAlert();
+    const btn = document.getElementById('loginBtn');
+    const spinner = document.getElementById('loginSpinner');
+    const txt = document.getElementById('loginBtnText');
+    btn.disabled = true; spinner.style.display = 'block'; txt.textContent = 'Signing in...';
+
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+
+    try {
+      const res  = await fetch('/api/auth/login', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({username, password}),
+      });
+      const json = await res.json();
+      if (json.ok) {
+        localStorage.setItem('aira_token', json.access_token);
+        localStorage.setItem('aira_refresh', json.refresh_token);
+        localStorage.setItem('aira_user', JSON.stringify(json.user));
+        showAlert('Welcome back, ' + json.user.username + '!', 'success');
+        setTimeout(() => { window.location.href = '/'; }, 700);
+      } else {
+        showAlert(json.error || 'Login failed.', 'error');
+        btn.disabled = false; spinner.style.display = 'none'; txt.textContent = 'Sign In';
+      }
+    } catch (_) {
+      showAlert('Server error. Please try again.', 'error');
+      btn.disabled = false; spinner.style.display = 'none'; txt.textContent = 'Sign In';
+    }
+  }
+
+  // ── Register ────────────────────────────────────────────────
+  async function handleRegister(e) {
+    e.preventDefault();
+    hideAlert();
+    const btn = document.getElementById('regBtn');
+    const spinner = document.getElementById('regSpinner');
+    const txt = document.getElementById('regBtnText');
+    btn.disabled = true; spinner.style.display = 'block'; txt.textContent = 'Creating account...';
+
+    const username = document.getElementById('regUsername').value.trim();
+    const email    = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value;
+
+    try {
+      const res  = await fetch('/api/auth/register', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({username, email, password}),
+      });
+      const json = await res.json();
+      if (json.ok) {
+        // Clear any old stored credentials
+        localStorage.removeItem('aira_token');
+        localStorage.removeItem('aira_refresh');
+        localStorage.removeItem('aira_user');
+
+        // Switch to Sign In tab MANUALLY (avoids switchTab calling hideAlert which would erase our message)
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('tabLogin').classList.add('active');
+        document.getElementById('panelLogin').classList.add('active');
+        // Pre-fill the username field
+        document.getElementById('loginUsername').value = username;
+        document.getElementById('loginPassword').value = '';
+        // Show success message AFTER switching panels
+        showAlert('✓ Account created! Enter your password below to sign in.', 'success');
+        btn.disabled = false; spinner.style.display = 'none'; txt.textContent = 'Create Account';
+        // Focus password after a tick so the DOM is settled
+        setTimeout(() => document.getElementById('loginPassword').focus(), 80);
+      } else {
+        showAlert(json.error || 'Registration failed.', 'error');
+        btn.disabled = false; spinner.style.display = 'none'; txt.textContent = 'Create Account';
+      }
+    } catch (_) {
+      showAlert('Server error. Please try again.', 'error');
+      btn.disabled = false; spinner.style.display = 'none'; txt.textContent = 'Create Account';
+    }
+  }
+</script>
+</body>
+</html>
